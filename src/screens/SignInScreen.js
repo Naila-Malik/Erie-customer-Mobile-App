@@ -7,6 +7,8 @@ import {
   StatusBar,
   SafeAreaView,
   Keyboard,
+  Image,
+  ImageBackground,
 } from 'react-native';
 import {
   Badge,
@@ -25,8 +27,13 @@ import {otpValidator} from '../helpers/otpValidator';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import {theme} from './../core/theme';
-import baseURL from './URL';
+import baseURL from '../core/URL';
 import PushNotification from 'react-native-push-notification';
+import {
+  widthPercentageToDP as wp,
+  heightPercentageToDP as hp,
+} from 'react-native-responsive-screen';
+import {BackgroundImage} from 'react-native-elements/dist/config';
 // import PhoneInput from "react-native-phone-number-input";
 
 const SignInScreen = ({navigation}) => {
@@ -71,6 +78,26 @@ const SignInScreen = ({navigation}) => {
       channelId: 'placeOrder-channel',
       channelName: 'placeOrder',
     });
+    PushNotification.createChannel({
+      channelId: 'Pending',
+      channelName: 'Pending',
+    });
+    PushNotification.createChannel({
+      channelId: 'Out-for-Delivery',
+      channelName: 'Out-for-Delivery',
+    });
+    PushNotification.createChannel({
+      channelId: 'Delivered',
+      channelName: 'Delivered',
+    });
+    PushNotification.createChannel({
+      channelId: 'Canceled',
+      channelName: 'Canceled',
+    });
+    PushNotification.createChannel({
+      channelId: 'Invalid',
+      channelName: 'Invalid',
+    });
   };
 
   useEffect(() => {
@@ -79,49 +106,90 @@ const SignInScreen = ({navigation}) => {
 
   return (
     <View style={styles.container}>
-      <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
+      <View style={{alignItems: 'center'}}>
         <Logo />
       </View>
-      <View style={{flex: 1.5}}>
+      <View style={styles.txt}>
+        <Text
+          style={{
+            color: theme.colors.primary,
+            fontWeight: 'bold',
+            fontFamily: 'Roboto',
+            fontSize: 24,
+          }}>
+          SignIn
+        </Text>
+      </View>
+      <Text
+        style={{
+          color: theme.colors.primary,
+          fontSize: 12,
+        }}>
+        Enter your phone number
+      </Text>
+      <View style={{}}>
         <TextInput
           label="Phone Number"
           returnKeyType="done"
           keyboardType={'numeric'}
-          autoFocus
+          // autoFocus
           onChangeText={text => setPhone({value: text, error: ''})}
           error={!!phone.error}
           errorText={phone.error}
         />
-        {/* <PhoneInput
-                defaultCode="PK"
-                layout="first"
-
-                onChangeFormattedText={(text) => {
-                  setPhone({ value: text, error: '' })
-                }}
-                withShadow
-                autoFocus
-                containerStyle={{ width: '100%', height: 80 }}
-
-              /> */}
-        <TouchableOpacity style={styles.button} onPress={() => login()}>
-          <Text style={styles.buttonText}>LOGIN</Text>
+        <Text
+          style={{color: theme.colors.primary, margin: '10%', fontSize: 14}}>
+          Enter a Phone number to get a text message with a verification code
+        </Text>
+        {/* <TouchableOpacity style={styles.button} onPress={() => login()}> */}
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => navigation.navigate('OtpVerify')}>
+          <Text style={styles.buttonText}>Send Code</Text>
         </TouchableOpacity>
       </View>
-
-      <Portal>
-        <Dialog visible={visible}>
-          <Dialog.Content>
-            <Paragraph>Please wait</Paragraph>
-          </Dialog.Content>
-        </Dialog>
-      </Portal>
-      <Snackbar
-        visible={snack}
-        onDismiss={() => setSnack(false)}
-        duration={1000}>
-        {snackmsg}
-      </Snackbar>
+      <BackgroundImage
+        source={require('../assets/RtoL.png')}
+        style={{
+          width: wp('100%'),
+          height: hp('30%'),
+          position: 'absolute',
+          bottom: 0,
+        }}
+        imageStyle={{
+          alignSelf: 'flex-end',
+        }}>
+        <View style={{flexDirection: 'row', marginBottom: hp('2%')}}>
+          <Text style={styles.txtHeadings}> I have not an account! </Text>
+          <Text
+            style={{
+              color: theme.colors.error,
+              fontSize: 16,
+              marginLeft: 10,
+              textDecorationLine: 'underline',
+              textDecorationColor: theme.colors.error,
+            }}
+            onPress={() => navigation.navigate('Signup')}>
+            {' '}
+            Sign up{' '}
+          </Text>
+        </View>
+      </BackgroundImage>
+      <View>
+        <Portal>
+          <Dialog visible={visible}>
+            <Dialog.Content>
+              <Paragraph>Please wait</Paragraph>
+            </Dialog.Content>
+          </Dialog>
+        </Portal>
+        <Snackbar
+          visible={snack}
+          onDismiss={() => setSnack(false)}
+          duration={1000}>
+          {snackmsg}
+        </Snackbar>
+      </View>
     </View>
   );
 };
@@ -164,13 +232,11 @@ const styles = StyleSheet.create({
     tintColor: '#fff',
   },
   button: {
-    marginTop: 30,
     height: 50,
-    // width: 300,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: theme.colors.secondry,
-    borderRadius: 5,
+    backgroundColor: theme.colors.error,
+    borderRadius: 20,
   },
 
   buttonText: {
@@ -198,6 +264,15 @@ const styles = StyleSheet.create({
     paddingLeft: 15,
     paddingRight: 15,
     borderRadius: 5,
+  },
+  txt: {
+    alignItems: 'center',
+    // marginBottom: 3,
+    // marginTop: -6,
+  },
+  txtHeadings: {
+    color: theme.colors.primary,
+    paddingHorizontal: 30,
   },
 });
 

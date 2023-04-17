@@ -1,5 +1,12 @@
 import React, {useState, useEffect, useRef} from 'react';
-import {TouchableOpacity, StyleSheet, View, Text, Keyboard} from 'react-native';
+import {
+  TouchableOpacity,
+  StyleSheet,
+  View,
+  Text,
+  Image,
+  Keyboard,
+} from 'react-native';
 import {Badge, Dialog, Snackbar, Paragraph, Portal} from 'react-native-paper';
 import Logo from '../components/Logo';
 import OTPInputView from '@twotalltotems/react-native-otp-input';
@@ -9,7 +16,11 @@ import {otpValidator} from '../helpers/otpValidator';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import {theme} from './../core/theme';
-import baseURL from './URL';
+import baseURL from '../core/URL';
+import {
+  widthPercentageToDP as wp,
+  heightPercentageToDP as hp,
+} from 'react-native-responsive-screen';
 
 const OtpVerify = ({navigation}) => {
   const otpInput = useRef(null);
@@ -40,11 +51,11 @@ const OtpVerify = ({navigation}) => {
       return;
     }
 
-    const memberIdError = memberIdValidator(memberId.value);
-    if (memberIdError) {
-      setMemberId({...memberId, error: memberIdError});
-      return;
-    }
+    // const memberIdError = memberIdValidator(memberId.value);
+    // if (memberIdError) {
+    //   setMemberId({...memberId, error: memberIdError});
+    //   return;
+    // }
     setVisible(true);
     axios
       .post(`${baseURL}verify-otp-auth`, {
@@ -64,9 +75,10 @@ const OtpVerify = ({navigation}) => {
         AsyncStorage.setItem('userName', String(data.customer.name));
 
         navigation.navigate('UserHomePage');
+        // navigation.navigate('UserProfile');
       })
       .catch(error => {
-        console.log('errorinfunc', error);
+        console.log('Error while verify otp', error);
         setVisible(false);
         // console.error(error.response.data.message)
         setSnack(true);
@@ -98,10 +110,36 @@ const OtpVerify = ({navigation}) => {
 
   return (
     <View style={styles.container}>
-      <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
+      <View
+        style={{alignItems: 'center', justifyContent: 'center', marginTop: 5}}>
         <Logo />
       </View>
-      <View style={{flex: 2}}>
+      <View style={styles.txt}>
+        <Text
+          style={{
+            color: theme.colors.primary,
+            fontWeight: 'bold',
+            fontFamily: 'Roboto',
+            fontSize: 24,
+          }}>
+          SignIn
+        </Text>
+      </View>
+      <View style={{alignItems: 'center'}}>
+        <Text
+          style={{
+            color: theme.colors.primary,
+            margin: '10%',
+            fontSize: 18,
+            fontWeight: 'bold',
+          }}>
+          Enter Code
+        </Text>
+        <Text style={{color: theme.colors.primary, fontSize: 14}}>
+          We have sent activation code to your phone
+        </Text>
+      </View>
+      <View style={{marginTop: -20}}>
         <OTPInputView
           style={{width: '100%', height: 150}}
           ref={otpInput}
@@ -129,7 +167,7 @@ const OtpVerify = ({navigation}) => {
         />
         {timerCount > 0 ? (
           <View style={{flexDirection: 'row', padding: 20}}>
-            <Text style={{color: '#fff'}}>Resend OTP after </Text>
+            <Text style={{color: theme.colors.primary}}>Resend OTP after </Text>
             <Badge>{timerCount} </Badge>
           </View>
         ) : (
@@ -143,9 +181,18 @@ const OtpVerify = ({navigation}) => {
           </View>
         )}
 
-        <TouchableOpacity style={styles.button} onPress={() => verifyOtp()}>
-          <Text style={styles.buttonText}>Verify</Text>
+        {/* <TouchableOpacity style={styles.button} onPress={() => verifyOtp()}> */}
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => navigation.navigate('TabNavigation')}>
+          <Text style={styles.buttonText}>Continue</Text>
         </TouchableOpacity>
+        {/* <View>
+          <Image
+            source={require('../assets/leaf_with_water.png')}
+            style={{width: wp('100%')}}
+          />
+        </View> */}
 
         <Portal>
           <Dialog visible={visible}>
@@ -168,7 +215,7 @@ const OtpVerify = ({navigation}) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: theme.colors.primary,
+    backgroundColor: theme.colors.default,
     paddingHorizontal: 30,
   },
 
@@ -186,6 +233,7 @@ const styles = StyleSheet.create({
     height: 45,
     borderWidth: 0,
     borderBottomWidth: 1,
+    color: theme.colors.primary,
   },
 
   linearGradient: {
@@ -195,7 +243,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
   },
   underlineStyleHighLighted: {
-    borderColor: '#03DAC6',
+    borderColor: theme.colors.darkGrey,
   },
   image: {
     width: 24,
@@ -203,13 +251,13 @@ const styles = StyleSheet.create({
     tintColor: '#fff',
   },
   button: {
-    marginTop: 30,
+    // marginTop: 30,
     height: 50,
     // width: 300,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: theme.colors.secondry,
-    borderRadius: 5,
+    backgroundColor: theme.colors.error,
+    borderRadius: 20,
   },
 
   buttonText: {
@@ -220,9 +268,10 @@ const styles = StyleSheet.create({
 
   resendOtpText: {
     flex: 2.5,
-    color: theme.colors.default,
+    color: theme.colors.primary,
     fontSize: 16,
-    marginTop: 10,
+    // marginTop: 10,
+    marginTop: -50,
   },
   resendText: {
     flex: 1,
@@ -230,13 +279,18 @@ const styles = StyleSheet.create({
     color: theme.colors.blue,
     fontSize: 16,
     fontWeight: 'bold',
-    marginTop: 10,
+    // marginTop: 10,
   },
   linearGradient: {
     flex: 1,
     paddingLeft: 15,
     paddingRight: 15,
     borderRadius: 5,
+  },
+  txt: {
+    alignItems: 'center',
+    // marginBottom: 3,
+    marginTop: -30,
   },
 });
 

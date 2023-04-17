@@ -1,24 +1,14 @@
-import React, { useState, useEffect } from 'react';
-import {
-  Text,
-  View,
-  Image,
-  TouchableOpacity,
-  StyleSheet,
-  StatusBar,
-} from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { theme } from '../core/theme'
-import { Paragraph, Dialog, Portal } from 'react-native-paper';
-import axios from 'axios';
+import React, {useState, useEffect} from 'react';
+import {Text, View, Image, StyleSheet, StatusBar} from 'react-native';
+import {theme} from '../core/theme';
+import {BackgroundImage} from 'react-native-elements/dist/config';
 
-const SplashScreen = ({ navigation }) => {
+const SplashScreen = ({navigation}) => {
   const [visible, setVisible] = useState(false);
   const [snack, setSnack] = useState(false);
   const [snackmsg, setSnackmsg] = useState();
 
   useEffect(() => {
-
     setTimeout(() => {
       // AsyncStorage.getItem('token').then((value) => {
       //   let val = JSON.parse(value)
@@ -27,30 +17,33 @@ const SplashScreen = ({ navigation }) => {
       //   )
 
       // })
-      navigation.navigate('Auth')
-    }, 2000);
+      navigation.navigate('onboarding');
+      // navigation.navigate('Auth');
+    }, 5000);
   }, []);
-
 
   return (
     <View style={styles.container}>
       <StatusBar backgroundColor={theme.colors.primary} />
-      <View style={styles.logo}>
-        <View>
-          <Image
-            style={{ width: 230, height: 103 }}
-            source={require('../assets/logo.png')}
-          />
+      <BackgroundImage
+        style={{width: '100%', height: '100%'}}
+        source={require('../assets/Splash_Screen.jpg')}>
+        <View
+          style={{
+            flex: 1,
+            justifyContent: 'center',
+            alignItems: 'center',
+            flexDirection: 'row',
+          }}>
+          <View style={{}}>
+            <Text style={styles.welcomeTxt}>Welcome to Erie water</Text>
+          </View>
+          {/* <View style={{}}>
+            <Text style={styles.infoTxt}>111-101-107</Text>
+            <Text style={styles.infoTxt}>www.erie.pk</Text>
+          </View> */}
         </View>
-
-        <View>
-          <Text style={styles.welcomeTxt}>Welcome to Erie water</Text>
-        </View>
-      </View>
-      <View style={styles.info}>
-        <Text style={styles.infoTxt}>111-101-107</Text>
-        <Text style={styles.infoTxt}>www.erie.pk</Text>
-      </View>
+      </BackgroundImage>
     </View>
   );
 };
@@ -66,21 +59,21 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   info: {
-    flex: 1,
+    // flex: 1,
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'flex-end',
-    margin: 10,
+    // alignItems: 'flex-end',
+    // margin: 10,
   },
   infoTxt: {
-    color: '#fff',
+    color: '#018795',
     fontSize: 18,
   },
   welcomeTxt: {
-    color: '#fff',
+    color: theme.colors.primary,
     fontSize: 18,
     fontWeight: 'bold',
-    marginTop: '5%',
+    marginTop: '90%',
   },
 });
 

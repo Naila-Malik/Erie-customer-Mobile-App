@@ -1,5 +1,5 @@
 import 'react-native-gesture-handler';
-import React, {useState, useEffect} from 'react';
+import {enableLatestRenderer} from 'react-native-maps';
 import {NavigationContainer, DrawerActions} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {Provider} from 'react-native-paper';
@@ -9,18 +9,30 @@ import OtpVerify from './src/screens/OtpVerify';
 import {Provider as StoreProvider} from 'react-redux';
 import {Store} from './src/redux/store';
 import {createDrawerNavigator} from '@react-navigation/drawer';
-import DrawerContent from './src/components/DrawerContent';
-import {theme} from './src/core/theme';
-import {Avatar} from 'react-native-paper';
-import {TouchableOpacity} from 'react-native-gesture-handler';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import UserHomePage from './src/screens/UserHomePage';
-import OrdersHistory from './src/screens/OrdersHistory';
-import OrderInvoice from './src/screens/OrderInvoice';
 import UserDashboard from './src/components/UserDashboard';
+import CustomerProfile from './src/screens/CustomerProfile';
+import {Colors} from 'react-native/Libraries/NewAppScreen';
+import OnboardingScreen from './src/screens/OnboardingScreens/OnboardingScreen';
+import SignupScreen from './src/screens/SignupScreen';
+import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
+import {Image} from 'react-native';
+import {theme} from 'native-base';
+import SmallPack from './src/screens/ProductDetailScreen/SmallPack';
+import AllProducts from './src/screens/ProductDetailScreen/AllProducts';
+import PlaceNewOrder from './src/screens/PlaceNewOrder';
+import SelectedCartItems from './src/SelectedCartItems';
+import AddressConfirmation from './src/screens/AddressConfirmation';
+import Checkout from './src/screens/Checkout';
+import Orders from './src/screens/Orders';
+import CompletedOrder from './src/screens/CompletedOrder';
+import SupportPage from './src/screens/SupportPage';
 
 const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
+const Tab = createBottomTabNavigator();
+
+enableLatestRenderer();
 
 const Auth = () => {
   // Stack Navigator for Login and Sign up Screen
@@ -35,59 +47,72 @@ const Auth = () => {
   );
 };
 
-// const DrawerNavigatorRoutes = ({ navigation }) => {
-
-//   const [img, setImg] = useState('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRHqNM4oqOODWPU5kEKklqChBr2mpZBgbh1SJDhzH8Wv20thhR2Cz_AzbXAK9yDYC_MHAE&usqp=CAU');
-//   const [name, setName] = useState('')
-
-//   useEffect(() => {
-//     AsyncStorage.getItem('token').then((value) => {
-//       console.log("after navigation" , value)
-//       if (value != null) {
-//         let val = JSON.parse(value)
-//         setImg(val.avatar)
-//         setName(val.name)
-//       }
-
-//     })
-//   })
-
-//   return (
-//     // <Provider>
-//     <Drawer.Navigator drawerContent={props => <DrawerContent {...props} />}>
-
-//       <Drawer.Screen
-//         name="OrderDelivery"
-//         component={OrderDelivery}
-//         options={{
-//           title: 'Order',
-//           headerTitleAlign: 'center',
-//           headerLeftContainerStyle: {
-//             left: 20
-//           },
-//           headerTintColor: theme.colors.default,
-//           headerLeft: () => (
-//             <TouchableOpacity onPress={() => navigation.dispatch(DrawerActions.toggleDrawer())}>
-//               <Avatar.Image
-//                 source={{ uri: img }}
-//                 size={40}
-//               />
-//             </TouchableOpacity>
-//           ),
-//           headerStyle: {
-//             backgroundColor: theme.colors.primary
-//           },
-//           headerTitleStyle: {
-//             color: theme.colors.default
-//           },
-
-//         }}
-//       />
-
-//     </Drawer.Navigator>
-//     // </Provider>
-//   );
-// };
+const TabNavigation = () => {
+  return (
+    <Tab.Navigator
+      initialRouteName="UserHomePage"
+      screenOptions={{
+        headerShown: false,
+      }}>
+      <Tab.Screen
+        name="UserHomePage"
+        component={UserHomePage}
+        options={{
+          tabBarLabel: 'Home',
+          tabBarActiveTintColor: '#018795',
+          tabBarIcon: () => (
+            <Image
+              source={require('./src/assets/home.png')}
+              style={{width: 20, height: 20}}
+            />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="Cart"
+        component={PlaceNewOrder}
+        options={{
+          tabBarLabel: 'Cart',
+          tabBarActiveTintColor: '#018795',
+          tabBarIcon: () => (
+            <Image
+              source={require('./src/assets/cart.png')}
+              style={{width: 20, height: 20}}
+            />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="Orders"
+        component={SelectedCartItems}
+        options={{
+          tabBarLabel: 'Orders',
+          tabBarActiveTintColor: '#018795',
+          tabBarIcon: () => (
+            <Image
+              source={require('./src/assets/orders.png')}
+              style={{width: 20, height: 20}}
+            />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="Account"
+        component={CustomerProfile}
+        options={{
+          tabBarLabel: 'Accounts',
+          tabBarActiveTintColor: '#018795',
+          tabBarIcon: () => (
+            <Image
+              source={require('./src/assets/avatar.png')}
+              style={{width: 20, height: 20}}
+            />
+          ),
+        }}
+      />
+    </Tab.Navigator>
+  );
+};
 
 const App = () => {
   return (
@@ -96,9 +121,16 @@ const App = () => {
         <NavigationContainer>
           <Stack.Navigator initialRouteName="SplashScreen">
             {/* SplashScreen which will come once for 5 Seconds */}
+
             <Stack.Screen
               name="SplashScreen"
               component={SplashScreen}
+              // Hiding header for Splash Screen
+              options={{headerShown: false}}
+            />
+            <Stack.Screen
+              name="onboarding"
+              component={OnboardingScreen}
               // Hiding header for Splash Screen
               options={{headerShown: false}}
             />
@@ -114,40 +146,50 @@ const App = () => {
               options={{headerShown: false}}
             />
             <Stack.Screen
-              name="UserHomePage"
-              component={UserHomePage}
+              name="Signup"
+              component={SignupScreen}
               options={{headerShown: false}}
             />
             <Stack.Screen
-              name="OrdersHistory"
-              component={OrdersHistory}
+              name="TabNavigation"
+              component={TabNavigation}
               options={{headerShown: false}}
             />
             <Stack.Screen
-              name="OrderInvoice"
-              component={OrderInvoice}
+              name="SmallPack"
+              component={SmallPack}
               options={{headerShown: false}}
             />
             <Stack.Screen
-              name="UserDashboard"
-              component={UserDashboard}
+              name="AllProducts"
+              component={AllProducts}
               options={{headerShown: false}}
             />
-
-            {/* <Stack.Screen
-              name="OrderDelivery"
-              component={OrderDelivery}
-              options={{
-                title: 'Order Delivery',
-                headerTintColor: theme.colors.default,
-                headerStyle: {
-                  backgroundColor: theme.colors.primary
-                },
-                headerTitleStyle: {
-                  color: theme.colors.default,
-                },
-              }}
-            /> */}
+            <Stack.Screen
+              name="SelectedCartItems"
+              component={SelectedCartItems}
+              options={{headerShown: false}}
+            />
+            <Stack.Screen
+              name="AddressConfirmation"
+              component={AddressConfirmation}
+              options={{headerShown: false}}
+            />
+            <Stack.Screen
+              name="Checkout"
+              component={Checkout}
+              options={{headerShown: false}}
+            />
+            <Stack.Screen
+              name="CompletedOrder"
+              component={CompletedOrder}
+              options={{headerShown: false}}
+            />
+            <Stack.Screen
+              name="SupportPage"
+              component={SupportPage}
+              options={{headerShown: false}}
+            />
           </Stack.Navigator>
         </NavigationContainer>
       </Provider>
